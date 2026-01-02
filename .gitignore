@@ -1,0 +1,25 @@
+# ===== IntelliJ / IDE =====
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# ===== OS =====
+.DS_Store
+Thumbs.db
+
+# ===== Backend (Java / Maven) =====
+target/
+*.log
+
+# ===== Frontend (Node / Vite / React) =====
+frontend/node_modules/
+frontend/dist/
+
+# ===== Environment files =====
+.env
+frontend/.env
+backend/.env
+
+# ===== VS Code =====
+.vscode/
