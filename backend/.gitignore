@@ -1,0 +1,49 @@
+############################
+# Backend (Spring Boot)
+############################
+target/
+HELP.md
+.mvn/wrapper/maven-wrapper.jar
+
+############################
+# Frontend (React / Vite)
+############################
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+
+############################
+# IDEs
+############################
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+
+############################
+# Eclipse / STS
+############################
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+############################
+# NetBeans
+############################
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+
+############################
+# OS
+############################
+.DS_Store
+Thumbs.db
