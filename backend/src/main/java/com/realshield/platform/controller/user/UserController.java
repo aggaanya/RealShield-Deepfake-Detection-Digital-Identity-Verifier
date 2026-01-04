@@ -126,4 +126,19 @@ public class UserController {
                         .build()
         );
     }
+
+    @PostMapping("/me/logout")
+    public ResponseEntity<ApiResponse<Void>> logout() {
+
+        userService.logout();
+
+        return ResponseEntity.ok(
+                ApiResponse.<Void>builder()
+                        .success(true)
+                        .message("User logged out successfully")
+                        .data(null)
+                        .build()
+        );
+    }
+
 }

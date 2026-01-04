@@ -2,10 +2,7 @@ package com.realshield.platform.controller.admin;
 
 
 import com.realshield.platform.dto.ApiResponse;
-import com.realshield.platform.dto.admin.AdminCreateRequestDTO;
-import com.realshield.platform.dto.admin.AdminLoginRequestDTO;
-import com.realshield.platform.dto.admin.AdminUserResponseDTO;
-import com.realshield.platform.dto.admin.UserStatusUpdateRequestDTO;
+import com.realshield.platform.dto.admin.*;
 import com.realshield.platform.service.admin.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+//thi sis the controller class in which will be consisting of the apis, which admin will use to manage authentication and users
 @RestController
 @RequestMapping("/admin/auth")
 public class AdminAuthController {
@@ -20,15 +18,22 @@ public class AdminAuthController {
     @Autowired
     private AdminService adminService;
 
-    public ResponseEntity<ApiResponse<String>> updateUserStatus(@PathVariable Long userId, @RequestBody UserStatusUpdateRequestDTO requestDTO) {
-        adminService.updateUserStatus(userId, requestDTO);
-        return ResponseEntity.ok(ApiResponse.success("User status updated successfully", null));
+    @PostMapping("/logout")
+    public ResponseEntity<ApiResponse<String>> logout() {
+        adminService.logout();
+        return ResponseEntity.ok(
+                ApiResponse.success("Admin logged out successfully", null)
+        );
     }
-    //this api returns the list of the users to the admin
-    @GetMapping
-    public ResponseEntity<ApiResponse<List<AdminUserResponseDTO>>> getAllUsers(){
-        List<AdminUserResponseDTO> admins = adminService.getAllUsers();
-        return ResponseEntity.ok(ApiResponse.success("Fetched all admins successfully", admins)
+
+
+    @PostMapping("/change-password")
+    public ResponseEntity<ApiResponse<String>> changePassword(
+            @RequestBody AdminChangePasswordRequestDTO request
+    ) {
+        adminService.changeAdminPassword(request);
+        return ResponseEntity.ok(
+                ApiResponse.success("Password changed successfully", null)
         );
     }
 

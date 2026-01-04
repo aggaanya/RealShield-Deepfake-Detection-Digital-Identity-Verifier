@@ -44,6 +44,11 @@ public class UserService {
     @Autowired
     private PasswordResetOtpRepository passwordResetOtpRepository;
 
+    public void logout() {
+        // Currently no JWT/session to invalidate
+        // This method is kept for future token/session invalidation
+    }
+
 
     //this is the helper method will generate a random 6 digit otp
     private String generateRandomOtp(){
