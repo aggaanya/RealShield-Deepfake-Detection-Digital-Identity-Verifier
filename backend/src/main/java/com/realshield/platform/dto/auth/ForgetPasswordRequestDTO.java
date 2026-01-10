@@ -8,6 +8,11 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+
+//this class have only one field that's email, this is because when the client hit the api for the forget password
+//than the client will send the email through this DTO get the token
+
+
 @Data
 @Builder
 @AllArgsConstructor

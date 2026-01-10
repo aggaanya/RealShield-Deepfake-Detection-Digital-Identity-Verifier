@@ -14,4 +14,5 @@ public interface EmailVerificationOtpRepository extends JpaRepository<EmailVerif
     @Modifying
     Optional<EmailVerificationOtp> deleteByEmail(String email);
     Optional<PasswordResetOtp> findTopByEmailOrderByExpiryTimeDesc(String email);
+    Optional<EmailVerificationOtp> findByEmail(String email);
 }

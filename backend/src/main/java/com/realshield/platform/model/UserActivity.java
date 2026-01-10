@@ -23,13 +23,16 @@ public class UserActivity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    private User user;
+
     @Column(nullable = false)
     //which user performed the action
     private String email;
 
     @Column(nullable = false)
     //what action was performed
-    private String action;
+    private UserActivityAction action;
 
     @Column(nullable = false)
     //from which ip address

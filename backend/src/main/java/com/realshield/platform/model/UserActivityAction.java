@@ -1,0 +1,23 @@
+package com.realshield.platform.model;
+
+
+public enum UserActivityAction {
+
+    LOGIN_SUCCESS,
+    LOGIN_FAILED,
+
+    LOGOUT,
+
+    PASSWORD_CHANGED,
+    PASSWORD_RESET,
+
+    EMAIL_VERIFIED,
+
+    ACCOUNT_DISABLED,
+    ACCOUNT_ENABLED,
+
+    OTP_SENT,
+    ACCOUNT_LOCKED,
+    PASSWORD_RESET_REQUESTED,
+    PASSWORD_RESET_SUCCESS
+}

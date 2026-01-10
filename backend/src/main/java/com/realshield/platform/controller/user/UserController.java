@@ -4,6 +4,7 @@ import com.realshield.platform.dto.ApiResponse;
 import com.realshield.platform.dto.auth.VerifyOtpRequestDTO;
 import com.realshield.platform.dto.user.*;
 import com.realshield.platform.model.UserActivity;
+import com.realshield.platform.service.user.UserActivityService;
 import com.realshield.platform.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -14,9 +15,12 @@ import java.util.List;
 @RestController
 @RequestMapping("/users")
 public class UserController {
-
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
+    private final UserActivityService userActivityService;
+    public UserController(UserService userService, UserActivityService userActivityService) {
+        this.userService = userService;
+        this.userActivityService = userActivityService;
+    }
 
     @PutMapping("/me/password")
     //this is the endpoint to change user password, by entering the
@@ -36,7 +40,7 @@ public class UserController {
     public ResponseEntity<ApiResponse<List<UserActivity>>> getUserActivity(
             @RequestParam String email) {
 
-        List<UserActivity> activities = userService.getUserActivity(email);
+        List<UserActivity> activities = userActivityService.getUserActivity(email);
 
         return ResponseEntity.ok(
                 ApiResponse.<List<UserActivity>>builder()
@@ -129,16 +133,7 @@ public class UserController {
 
     @PostMapping("/me/logout")
     public ResponseEntity<ApiResponse<Void>> logout() {
-
         userService.logout();
-
-        return ResponseEntity.ok(
-                ApiResponse.<Void>builder()
-                        .success(true)
-                        .message("User logged out successfully")
-                        .data(null)
-                        .build()
-        );
+        return ResponseEntity.ok(ApiResponse.<Void>builder().success(true).message("User logged out successfully").data(null).build());
     }
-
 }

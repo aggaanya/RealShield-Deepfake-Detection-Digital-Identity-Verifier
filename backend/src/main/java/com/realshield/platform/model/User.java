@@ -10,6 +10,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 //role is a backend security concepts does not have to be shown on the UI
 
 @Data
@@ -54,5 +56,9 @@ public class User {
    @Column(nullable = false)
    //new user will have emailVerified as false by default
     private boolean emailVerified = false;
+
+   private int failedLoginAttempts = 0;
+
+   private LocalDateTime accountLockedUntil;
 
 }

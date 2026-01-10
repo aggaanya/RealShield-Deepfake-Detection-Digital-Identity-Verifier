@@ -16,6 +16,8 @@ public interface UserRepository extends JpaRepository<User, Long> , JpaSpecifica
     //interface is declaring the methods not defining the body
     Optional<User> findByEmail(String email);
 
+    boolean existsByEmail(String email);
+
     Optional<User> findById(Long id);
 
     long countByActive(boolean active);

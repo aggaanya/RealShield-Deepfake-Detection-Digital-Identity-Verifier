@@ -1,4 +1,4 @@
-package com.realshield.platform;
+package com.realshield.platform.exception;
 
 public class InvalidOtpException extends RuntimeException {
     public InvalidOtpException(String message) {

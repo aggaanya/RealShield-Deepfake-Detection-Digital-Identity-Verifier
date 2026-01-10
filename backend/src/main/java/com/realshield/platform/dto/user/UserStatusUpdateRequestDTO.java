@@ -1,4 +1,4 @@
-package com.realshield.platform.dto.admin;
+package com.realshield.platform.dto.user;
 
 
 import lombok.Data;

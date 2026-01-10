@@ -1,15 +1,12 @@
 package com.realshield.platform.service.user;
 
 
-import com.realshield.platform.*;
 import com.realshield.platform.dto.user.ChangeEmailDTO;
 import com.realshield.platform.dto.user.ChangePasswordDTO;
 import com.realshield.platform.dto.user.UpdateUserDTO;
 import com.realshield.platform.dto.user.UserProfileDTO;
-import com.realshield.platform.model.EmailVerificationOtp;
-import com.realshield.platform.model.PasswordResetOtp;
-import com.realshield.platform.model.User;
-import com.realshield.platform.model.UserActivity;
+import com.realshield.platform.exception.*;
+import com.realshield.platform.model.*;
 import com.realshield.platform.repository.EmailVerificationOtpRepository;
 import com.realshield.platform.repository.PasswordResetOtpRepository;
 import com.realshield.platform.repository.UserActivityRepository;
@@ -25,24 +22,22 @@ import java.util.List;
 
 @Service
 public class UserService {
-    @Autowired
-    private UserRepository userRepository;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final EmailVerificationOtpRepository otpRepository;
+    private final PasswordResetOtpRepository passwordResetOtpRepository;
+    private final EmailService emailService;
+    private final UserActivityService userActivityService;
 
-    @Autowired
-    private EmailVerificationOtpRepository otpRepository;
-
-    @Autowired
-    private EmailService emailService;
-
-
-    @Autowired
-    private UserActivityRepository activityRepository;
-
-    @Autowired
-    private PasswordResetOtpRepository passwordResetOtpRepository;
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, EmailVerificationOtpRepository otpRepository, PasswordResetOtpRepository passwordResetOtpRepository, EmailService emailService, UserActivityService userActivityService) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.otpRepository = otpRepository;
+        this.passwordResetOtpRepository = passwordResetOtpRepository;
+        this.emailService = emailService;
+        this.userActivityService = userActivityService;
+    }
 
     public void logout() {
         // Currently no JWT/session to invalidate
@@ -57,8 +52,7 @@ public class UserService {
 
 
     public void forgotPassword(String email) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
         PasswordResetOtp otp = PasswordResetOtp.builder()
                 .email(email)
                 .otp(generateRandomOtp())
@@ -68,7 +62,6 @@ public class UserService {
                 .build();
 
         passwordResetOtpRepository.save(otp);
-
         emailService.sendOtpEmail(email, otp.getOtp());
     }
 
@@ -76,32 +69,16 @@ public class UserService {
     public void changePassword(String email, ChangePasswordDTO dto) {
 
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("user not found"));
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
 
-        // ✅ FIX: invert the condition
         if (!passwordEncoder.matches(dto.getOldPassword(), user.getPassword())) {
-            throw new RuntimeException("old password is incorrect");
+            throw new InvalidCredentialsException("Old password is incorrect");
         }
 
         user.setPassword(passwordEncoder.encode(dto.getNewPassword()));
         userRepository.save(user);
 
-        logActivity(email, "Password changed successfully", "system");
-    }
-
-
-    public List<UserActivity> getUserActivity(String email){
-        return activityRepository.findByEmailOrderByTimestampDesc(email);
-    }
-
-    public void logActivity(String email, String action, String ipAddress){
-        UserActivity activity = UserActivity.builder()
-                .email(email)
-                .action(action)
-                .ipAddress(ipAddress)
-                .timestamp(LocalDateTime.now())
-                .build();
-        activityRepository.save(activity);
+        userActivityService.logActivity(email, UserActivityAction.PASSWORD_CHANGED);
     }
 
 
@@ -109,8 +86,6 @@ public class UserService {
     //this is the logic for the OTP generation and mapping to the entity
     @Transactional
     public void generateEmailVerificationOtp(String email) {
-
-        // ✅ delete existing OTP if any
         otpRepository.deleteByEmail(email);
 
         EmailVerificationOtp otp = EmailVerificationOtp.builder()
@@ -120,7 +95,6 @@ public class UserService {
                 .expiryTime(LocalDateTime.now().plusMinutes(10))
                 .verified(false)
                 .build();
-
         otpRepository.save(otp);
 
     }
@@ -148,7 +122,7 @@ public class UserService {
         otp.setVerified(true);
         otpRepository.save(otp);
 
-        String email = otp.getEmail(); // 🔥 SOURCE OF TRUTH
+        String email = otp.getEmail();
 
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
@@ -167,58 +141,50 @@ public class UserService {
 
     //this is the logic where we will update the user profile
     public void updateProfile(String email, UpdateUserDTO dto) {
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("user not found"));
 
-        if (dto.getName() != null) {
-            user.setName(dto.getName());
-        }
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
 
-        if (dto.getPhoneNumber() != null) {
-            user.setPhoneNumber(dto.getPhoneNumber());
-        }
+        if (dto.getName() != null) user.setName(dto.getName());
+        if (dto.getPhoneNumber() != null) user.setPhoneNumber(dto.getPhoneNumber());
+        if (dto.getAddress() != null) user.setAddress(dto.getAddress());
 
-        if (dto.getAddress() != null) {
-            user.setAddress(dto.getAddress());
-        }
-
-        if (dto.getAddress() != null) {
-            user.setAddress(dto.getAddress());
-            userRepository.save(user);
-        }
         userRepository.save(user);
     }
+
 
     //this is the logic to delete user account, fetching the user through there email
     public void deleteAccount(String email) {
 
-        //fetching th user from the database, and if not present throwing an exception
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("user not found"));
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
 
-        //user have already deactivated there account
         if (!user.isActive()) {
-            throw new RuntimeException("user account is already deactivated");
+            throw new AccountDisabledException("Account already deactivated");
         }
-        userRepository.delete(user);
+
+        user.setActive(false);
+        userRepository.save(user);
     }
+
     //fetching the user through these email, verifying the password, checking if new email is unique and updating the email
     //and very import making the emailVerified to True
-    public void changeEmail(String currentEmail, ChangeEmailDTO dto){
-        //fetching the user from the database, with the current email and if not present throwing an exception
-        //dto consist of the newEmail and password
-        User user = userRepository.findByEmail(currentEmail).orElseThrow(()-> new RuntimeException("user not found"));
+    public void changeEmail(String currentEmail, ChangeEmailDTO dto) {
 
-        //verifying the password that the user have provided is correct
-        if (passwordEncoder.matches(user.getPassword(), dto.getPassword())){
-            throw new RuntimeException("password is incorrect");
-        }
-        //checking if the new email is unique, hence email must be unique and not be found in the database
-        if (userRepository.findByEmail(dto.getNewEmail()).isPresent()){
-            throw new RuntimeException("email is already in use");
+        User user = userRepository.findByEmail(currentEmail)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+
+        if (!passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
+            throw new InvalidCredentialsException("Password is incorrect");
         }
 
-        //updating the email and setting email verified to false
+        if (userRepository.findByEmail(dto.getNewEmail()).isPresent()) {
+            throw new EmailAlreadyExistsException("Email already in use");
+        }
+
         user.setEmail(dto.getNewEmail());
         user.setEmailVerified(false);
         userRepository.save(user);
     }
+
 }

@@ -1,0 +1,29 @@
+/*
+ * TODO (JWT REQUIRED):
+ * This endpoint depends on JWT authentication.
+ *
+ * Current implementation uses a hardcoded userId
+ * ONLY for development/testing purposes.
+ *
+ * Once JWT is implemented:
+ * - Extract userId from JWT (SecurityContext)
+ * - Remove hardcoded userId
+ * - Protect this endpoint with JWT filter
+ *
+ * DO NOT use this endpoint in production until JWT is added.
+ */
+
+
+/*
+ * TODO (JWT REQUIRED):
+ * This logout endpoint depends on JWT authentication.
+ *
+ * Current implementation is a placeholder.
+ *
+ * Once JWT is implemented:
+ * - Extract user identity from JWT
+ * - Optionally blacklist token (if required)
+ * - Frontend should delete stored JWT
+ *
+ * Do NOT modify login/logout flow without JWT.
+ */

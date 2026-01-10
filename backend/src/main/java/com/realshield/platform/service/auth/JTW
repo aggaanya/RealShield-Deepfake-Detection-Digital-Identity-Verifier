@@ -1,0 +1,138 @@
+## 🔐 JWT Authentication – Contributor Notes
+
+### Current Status
+The login flow is fully implemented and production-ready **without JWT**.
+It already handles:
+- Email existence check
+- Password verification (BCrypt)
+- Account lock after failed attempts
+- Email verification check
+- Account active/disabled check
+- Login activity logging (`UserActivity`)
+
+⚠️ **Do NOT modify the existing login validation logic.**
+JWT must be implemented **on top of** this logic.
+
+---
+
+### Goal of JWT Integration
+JWT is required to:
+- Establish authentication state after login
+- Secure protected APIs
+- Identify the logged-in user across requests
+
+---
+
+### Where to Add JWT
+JWT generation should happen **after successful login** in:
+
+
+
+---
+
+### JWT Responsibilities
+JWT should:
+- Be generated only after all validations pass
+- Contain user identity and role
+- Be stateless (no DB storage)
+
+Recommended claims:
+```json
+{
+  "sub": "<internal-user-id>",
+  "email": "user@gmail.com",
+  "role": "USER",
+  "iat": <issued-at>,
+  "exp": <expiry>
+}
+
+
+UPDATE THE AuthResponseDTO
+private String accessToken;
+{
+  "success": true,
+  "message": "User login successfully",
+  "data": {
+    "email": "user@gmail.com",
+    "role": "USER",
+    "accessToken": "<jwt-token>"
+  }
+}
+
+
+
+---
+
+# 2️⃣ TODO COMMENT — PLACE DIRECTLY IN LOGIN METHOD
+
+Put this **exact comment** above your return statement in `AuthService.login()`:
+
+```java
+/*
+ * TODO (JWT Integration):
+ * - Generate JWT after successful login
+ * - Include userId (internal), email, role as claims
+ * - Set token expiry (e.g., 1 hour)
+ * - Add token to AuthResponseDTO as accessToken
+ *
+ * IMPORTANT:
+ * - Do NOT change existing login validation logic
+ * - JWT must be generated only after:
+ *   - password validation
+ *   - account lock check
+ *   - email verification check
+ *   - account active check
+ *
+ * JWT will be implemented by another contributor.
+ */
+
+JWT IMPLEMENTATION CHECKLIST (FOR CONTRIBUTORS)
+✅ JWT Setup
+
+ Add jjwt or equivalent JWT library
+
+ Create JwtUtil for token generation & validation
+
+ Define secret key & expiry in config
+
+✅ Login Integration
+
+ Generate JWT inside AuthService.login()
+
+ Add token to AuthResponseDTO
+
+ Do NOT expose password or DB ID
+
+✅ Security Filter
+
+ Create JWT authentication filter
+
+ Extract token from Authorization header
+
+ Validate token
+
+ Populate SecurityContext
+
+✅ Spring Security Config
+
+ Allow unauthenticated access to /auth/**
+
+ Secure /users/**, /admin/**
+
+ Register JWT filter before UsernamePasswordAuthenticationFilter
+
+✅ Authenticated APIs
+
+ Implement /auth/me using JWT
+
+ Return logged-in user info from token
+
+❌ Do NOT
+
+ Store JWT in database
+
+ Change existing login logic
+
+ Add JWT code in controllers
+
+ Expose sensitive user data
