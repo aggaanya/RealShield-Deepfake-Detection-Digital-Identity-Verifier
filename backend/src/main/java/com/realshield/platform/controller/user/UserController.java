@@ -6,6 +6,7 @@ import com.realshield.platform.dto.user.*;
 import com.realshield.platform.model.UserActivity;
 import com.realshield.platform.service.user.UserActivityService;
 import com.realshield.platform.service.user.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,16 +25,9 @@ public class UserController {
 
     @PutMapping("/me/password")
     //this is the endpoint to change user password, by entering the
-    public ResponseEntity<ApiResponse<Void>> changePassword(@RequestParam String email, @RequestBody ChangePasswordDTO dto) {
-        userService.changePassword(email, dto);
-
-        return ResponseEntity.ok(
-                ApiResponse.<Void>builder()
-                        .success(true)
-                        .message("User password changed successfully")
-                        .data(null)
-                        .build()
-        );
+    public ResponseEntity<ApiResponse<Void>> changePassword(@RequestParam String email, @RequestBody ChangePasswordDTO dto, HttpServletRequest request) {
+        userService.changePassword(email, dto, request.getRemoteAddr());
+        return ResponseEntity.ok(ApiResponse.<Void>builder().success(true).message("User password changed successfully").data(null).build());
     }
 
     @GetMapping("/me/activity")

@@ -66,7 +66,7 @@ public class UserService {
     }
 
     //fetching the user through there email, verifying the old password, encoding the new password and saving it to the database
-    public void changePassword(String email, ChangePasswordDTO dto) {
+    public void changePassword(String email, ChangePasswordDTO dto, String ipAddress) {
 
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
@@ -78,7 +78,7 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(dto.getNewPassword()));
         userRepository.save(user);
 
-        userActivityService.logActivity(email, UserActivityAction.PASSWORD_CHANGED);
+        userActivityService.logActivity(email, UserActivityAction.PASSWORD_CHANGED, ipAddress);
     }
 
 
