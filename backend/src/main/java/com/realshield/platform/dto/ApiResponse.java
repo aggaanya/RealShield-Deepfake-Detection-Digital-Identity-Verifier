@@ -1,5 +1,6 @@
 package com.realshield.platform.dto;
 
+import com.realshield.platform.model.UserActivity;
 import lombok.Builder;
 import lombok.Data;
 
@@ -42,4 +43,13 @@ public class ApiResponse<T>{
                 .timestamp(LocalDateTime.now())
                 .build();
     }
+    public static <T> ApiResponse<T> data(T data, String message) {
+        return ApiResponse.<T>builder()
+                .success(true)
+                .message(message)
+                .data(data)
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
+
 }

@@ -1,5 +1,7 @@
 package com.realshield.platform.service.user;
 
+import com.realshield.platform.dto.user.UserActivityDTO;
+import com.realshield.platform.exception.UserNotFoundException;
 import com.realshield.platform.model.User;
 import com.realshield.platform.model.UserActivity;
 import com.realshield.platform.model.UserActivityAction;
@@ -22,21 +24,21 @@ public class UserActivityService {
     }
 
     public void logActivity(String email, UserActivityAction action, String ipAddress) {
-
         User user = userRepository.findByEmail(email).orElse(null);
-
-        UserActivity activity = UserActivity.builder()
-                .email(email)
-                .action(action)
-                .ipAddress(ipAddress)
-                .timestamp(LocalDateTime.now())
-                .user(user)
-                .build();
-
+        UserActivity activity = UserActivity.builder().email(email).action(action).ipAddress(ipAddress).timestamp(LocalDateTime.now()).user(user).build();
         userActivityRepository.save(activity);
     }
 
-    public List<UserActivity> getUserActivity(String email) {
-        return userActivityRepository.findByEmailOrderByTimestampDesc(email);
+    public List<UserActivityDTO> getUserActivity(String email) {
+        List<UserActivity> activities = userActivityRepository.findByEmailOrderByTimestampDesc(email);
+
+        return activities.stream().map(activity -> {
+            UserActivityDTO dto = new UserActivityDTO();
+            dto.setAction(activity.getAction().name());
+            dto.setEmail(activity.getEmail());
+            dto.setIpAddress(activity.getIpAddress());
+            dto.setTimestamp(activity.getTimestamp());
+            return dto;
+        }).toList();
     }
 }

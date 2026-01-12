@@ -9,6 +9,8 @@ import com.realshield.platform.repository.UserRepository;
 import com.realshield.platform.service.user.UserActivityService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -130,6 +132,7 @@ public class AuthService {
         return AuthResponseDTO.builder().id(user.getId()).role(user.getRole()).email(user.getEmail()).build();
         //jwt
     }
+    @Transactional
     public void sendEmailVerificationOtp(String email, String ipAddress) {
         //fetching the user exists in the database or not, if not throw exception
         User user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException("User not found"));
@@ -138,7 +141,11 @@ public class AuthService {
         if (user.isEmailVerified()) {
             throw new EmailAlreadyVerifiedException("Email already verified");
         }
-
+        emailVerificationOtpRepository.findByEmail(email).ifPresent(existingOtp -> {
+            if (existingOtp.getExpiryTime().isAfter(LocalDateTime.now())) {
+                throw new TooManyOtpAttemptsException("OTP already sent. Please wait before requesting again.");
+            }
+        });
         //Before creating a new OTP, remove any old OTP that belongs to this email.
         //if old otp is not there than no exception error will occur
         emailVerificationOtpRepository.deleteByEmail(email);
@@ -149,10 +156,13 @@ public class AuthService {
         EmailVerificationOtp emailOtp = EmailVerificationOtp.builder().email(email).otp(otp).expiryTime(LocalDateTime.now().plusMinutes(10)).verified(false).attempts(0).build();
         //saving the otp with the respective email of the user in the database
         emailVerificationOtpRepository.save(emailOtp);
-        System.out.println("EMAIL OTP for " + email + " : " + otp);
         userActivityService.logActivity(email, UserActivityAction.OTP_SENT, ipAddress);
     }
     public void verifyEmail(String email, String inputOtp, String ipAddress) {
+        User user = userRepository.findByEmail(email).orElseThrow(()-> new UserNotFoundException("user not found"));
+        if (user.isEmailVerified()) {
+            throw new EmailAlreadyVerifiedException("Email already verified");
+        }
         //here we are checking has the otp for thi email generated,if the row of this table does not exist than exception will be thrown
         //this table gets created automatically when the application get started
         EmailVerificationOtp emailOtp = emailVerificationOtpRepository.findByEmail(email).orElseThrow(() -> new OtpNotFoundException("OTP not found"));
@@ -173,10 +183,7 @@ public class AuthService {
             throw new InvalidOtpException("Invalid OTP");
         }
         emailOtp.setAttempts(0);
-        User user = userRepository.findByEmail(email).orElseThrow(()-> new UserNotFoundException("user not found"));
-        if (user.isEmailVerified()) {
-            throw new EmailAlreadyVerifiedException("Email already verified");
-        }
+
 
         user.setEmailVerified(true);
         user.setActive(true);

@@ -6,11 +6,7 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <!-- ===============================
-         Spring Boot Parent
-         Using stable Spring Boot 3.3.5
-         Compatible with Java 17 & Swagger
-         =============================== -->
+    <!--Spring Boot Parent Using stable Spring Boot 3.3.5 Compatible with Java 17 & Swagger-->
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
@@ -18,105 +14,79 @@
         <relativePath/>
     </parent>
 
-    <!-- ===============================
-         Project Information
-         =============================== -->
+    <!-- Project Information -->
     <groupId>com.realshield</groupId>
     <artifactId>realshield-backend</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>realshield-platform</name>
     <description>RealShield AI Backend Platform</description>
 
-    <!-- ===============================
-         Java Version
-         Java 17 is REQUIRED for Spring Boot 3
-         =============================== -->
+    <!-- Java Version Java 17 is REQUIRED for Spring Boot 3  -->
     <properties>
         <java.version>17</java.version>
     </properties>
 
-    <!-- ===============================
-         Dependencies
-         =============================== -->
+    <!-- Dependencies  -->
     <dependencies>
 
-        <!-- Spring Web
-             Used for REST APIs, Controllers, JSON handling -->
+        <!-- Spring Web -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
-        <!-- Spring Data JPA
-             Used for database access using Hibernate -->
+        <!-- Spring Data JPA -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
 
-        <!-- Validation
-             Used for @NotNull, @Email, @Size, etc. -->
+        <!-- Validation -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
 
-        <!-- Mail
-             Used for email sending (OTP, reset password, etc.) -->
+        <!-- Mail -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-mail</artifactId>
         </dependency>
 
-        <!-- Actuator
-             Used for health checks, metrics, monitoring -->
+        <!-- Actuator -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
 
-        <!-- H2 Database (Local Development)
-             In-memory database for development & testing -->
+        <!-- MySQL -->
         <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
             <scope>runtime</scope>
         </dependency>
 
-        <!-- PostgreSQL (Production Database)
-             Used when deploying to production -->
-        <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <scope>runtime</scope>
-        </dependency>
-
-        <!-- Swagger / OpenAPI
-             API documentation & testing UI
-             Compatible with Spring Boot 3 -->
+        <!-- Swagger -->
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
             <version>2.5.0</version>
         </dependency>
 
-
-        <!-- Password hashing only (NO security filters) -->
+        <!-- Password hashing only -->
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-crypto</artifactId>
         </dependency>
 
-        <!-- Lombok
-             Reduces boilerplate code (getters, setters, constructors) -->
+        <!-- Lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
 
-        <!-- DevTools
-             Auto-restart & live reload during development -->
+        <!-- DevTools -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
@@ -124,18 +94,15 @@
             <optional>true</optional>
         </dependency>
 
-        <!-- Testing
-             JUnit, Mockito, Spring Boot test utilities -->
+        <!-- Testing -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
 
-        <!-- ❌ Spring Security REMOVED intentionally
-             We will add it later when authentication is required -->
-
     </dependencies>
+
 
     <!-- ===============================
          Build Configuration

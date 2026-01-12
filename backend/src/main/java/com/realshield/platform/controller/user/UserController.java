@@ -31,65 +31,24 @@ public class UserController {
     }
 
     @GetMapping("/me/activity")
-    public ResponseEntity<ApiResponse<List<UserActivity>>> getUserActivity(
-            @RequestParam String email) {
-
-        List<UserActivity> activities = userActivityService.getUserActivity(email);
-
-        return ResponseEntity.ok(
-                ApiResponse.<List<UserActivity>>builder()
-                        .success(true)
-                        .message("User activity fetched successfully")
-                        .data(activities)
-                        .build()
-        );
+    public ResponseEntity<ApiResponse<List<UserActivityDTO>>> getMyActivity(@RequestParam String email) {
+        List<UserActivityDTO> activities = userActivityService.getUserActivity(email);
+        return ResponseEntity.ok(ApiResponse.<List<UserActivityDTO>>builder().success(true).message("User activity fetched successfully").data(activities).build());
     }
-
-
-    @PostMapping("/me/verify-email")
-    public ResponseEntity<ApiResponse<Void>> verifyEmail(
-            @RequestBody VerifyOtpRequestDTO dto) {
-
-        userService.verificationOtp(dto.getOtp());
-
-        return ResponseEntity.ok(
-                ApiResponse.<Void>builder()
-                        .success(true)
-                        .message("Email verified successfully")
-                        .data(null)
-                        .build()
-        );
-    }
-
-
 
     //this is the endpoint to change user email
     @PutMapping("/me/email")
     public ResponseEntity<ApiResponse<Void>> changeEmail(@RequestParam String email, @RequestBody ChangeEmailDTO dto) {
         userService.changeEmail(email, dto);
-
-        return ResponseEntity.ok(
-                ApiResponse.<Void>builder()
-                        .success(true)
-                        .message("User email changed successfully")
-                        .data(null)
-                        .build()
-        );
+        return ResponseEntity.ok(ApiResponse.<Void>builder().success(true).message("User email changed successfully").data(null).build());
     }
-
     //update user profile
     @PutMapping("/me")
     public ResponseEntity<ApiResponse<Void>> updateProfile(@RequestParam String email, @RequestBody UpdateUserDTO dto) {
         userService.updateProfile(email, dto);
-
-        return ResponseEntity.ok(
-                ApiResponse.<Void>builder()
-                        .success(true)
-                        .message("User profile updated successfully")
-                        .data(null)
-                        .build()
-        );
+        return ResponseEntity.ok(ApiResponse.<Void>builder().success(true).message("User profile updated successfully").data(null).build());
     }
+
 
     //return user profile
     @GetMapping("/me")
@@ -98,32 +57,15 @@ public class UserController {
         return ResponseEntity.ok(ApiResponse.<UserProfileDTO>builder().success(true).message("User profile fetched successfully").data(userProfileDTO).build());
     }
 
-    @PostMapping("/send-verification-otp")
-    public ResponseEntity<ApiResponse<Object>> sendVerificationOtp(@RequestParam String email) {
-        userService.generateEmailVerificationOtp(email);
-        return ResponseEntity.ok(
-                ApiResponse.builder()
-                        .success(true)
-                        .message("Verification OTP sent successfully")
-                        .data(null)
-                        .build()
-        );
-    }
-
     //delete user profile
     @DeleteMapping("/me")
     //we are using Void here because we are not returning any data, only performing an action,
     //does not return any data in the response body
     public ResponseEntity<ApiResponse<Void>> deleteProfile(@RequestParam String email) {
         userService.deleteAccount(email);
-        return ResponseEntity.ok(
-                ApiResponse.<Void>builder()
-                        .success(true)
-                        .message("User profile deactivated successfully")
-                        .data(null)
-                        .build()
-        );
+        return ResponseEntity.ok(ApiResponse.<Void>builder().success(true).message("User profile deactivated successfully").data(null).build());
     }
+
 
     @PostMapping("/me/logout")
     public ResponseEntity<ApiResponse<Void>> logout() {

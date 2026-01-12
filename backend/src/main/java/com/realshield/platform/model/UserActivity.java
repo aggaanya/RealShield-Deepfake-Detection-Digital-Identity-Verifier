@@ -17,13 +17,14 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "user_activities")
+@Table(name = "user_activity")
 public class UserActivity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @Column(nullable = false)
@@ -32,7 +33,9 @@ public class UserActivity {
 
     @Column(nullable = false)
     //what action was performed
+    @Enumerated(EnumType.STRING)
     private UserActivityAction action;
+
 
     @Column(nullable = false)
     //from which ip address

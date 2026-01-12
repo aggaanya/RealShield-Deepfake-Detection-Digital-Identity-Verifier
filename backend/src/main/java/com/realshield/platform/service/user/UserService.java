@@ -102,9 +102,7 @@ public class UserService {
 
     public void verificationOtp(String inputOtp) {
 
-        EmailVerificationOtp otp = otpRepository
-                .findByOtp(inputOtp)
-                .orElseThrow(() -> new OtpNotFoundException("OTP not found"));
+        EmailVerificationOtp otp = otpRepository.findByOtp(inputOtp).orElseThrow(() -> new OtpNotFoundException("OTP not found"));
 
         if (otp.isVerified()) {
             throw new OtpAlreadyVerifiedException("OTP is already verified");
