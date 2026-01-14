@@ -8,11 +8,47 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import java.time.LocalDateTime;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiResponse<Void>> handleGeneric(Exception ex, HttpServletRequest request) {
+        ex.printStackTrace(); // IMPORTANT for debugging
+        return ResponseEntity.internalServerError().body(
+                ApiResponse.failure("Internal server error", ex.getMessage(), request.getRequestURI()));
+    }
+
+
+    @ExceptionHandler(InvalidFileTypeException.class)
+    public ResponseEntity<ApiResponse<Void>> handleInvalidFileType(
+            InvalidFileTypeException ex,
+            HttpServletRequest request
+    ) {
+        return ResponseEntity.badRequest().body(
+                ApiResponse.failure(
+                        "Invalid file type",
+                        ex.getMessage(),
+                        request.getRequestURI()
+                )
+        );
+    }
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<ApiResponse<Void>> handleMaxSize(
+            MaxUploadSizeExceededException ex,
+            HttpServletRequest request
+    ) {
+        return ResponseEntity.badRequest().body(
+                ApiResponse.failure(
+                        "File size exceeded",
+                        "Maximum allowed size is 100MB",
+                        request.getRequestURI()
+                )
+        );
+    }
 
     // 409 - Email already exists
     @ExceptionHandler(EmailAlreadyExistsException.class)
@@ -67,14 +103,6 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.failure(ex.getMessage()));
     }
 
-    // 500 - Fallback
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiResponse<Void>> handleGeneric(Exception ex) {
-        return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(ApiResponse.failure("Internal server error"));
-    }
-
     @ExceptionHandler(EmailNotVerifiedException.class)
     public ResponseEntity<ApiResponse<Void>> handleEmailNotVerified(
             EmailNotVerifiedException ex
@@ -109,30 +137,10 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(AccountLockedException.class)
     public ResponseEntity<ApiResponse<Void>> handleAccountLocked(AccountLockedException ex) {
-        return ResponseEntity
-                .status(HttpStatus.FORBIDDEN)
-                .body(
-                        ApiResponse.<Void>builder()
-                                .success(false)
-                                .message(ex.getMessage())
-                                .timestamp(LocalDateTime.now())
-                                .build()
-                );
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ApiResponse.<Void>builder().success(false).message(ex.getMessage()).timestamp(LocalDateTime.now()).build());
     }
     @ExceptionHandler(InvalidCredentialsException.class)
-    public ResponseEntity<ApiResponse<Void>> handleInvalidCredentials(
-            InvalidCredentialsException ex,
-            HttpServletRequest request
-    ) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body(
-                        ApiResponse.<Void>builder()
-                                .success(false)
-                                .message(ex.getMessage())
-                                .path(request.getRequestURI())
-                                .timestamp(LocalDateTime.now())
-                                .build()
-                );
+    public ResponseEntity<ApiResponse<Void>> handleInvalidCredentials(InvalidCredentialsException ex, HttpServletRequest request) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponse.<Void>builder().success(false).message(ex.getMessage()).path(request.getRequestURI()).timestamp(LocalDateTime.now()).build());
     }
-
 }

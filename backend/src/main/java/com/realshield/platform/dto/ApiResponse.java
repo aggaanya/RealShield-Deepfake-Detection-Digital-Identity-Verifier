@@ -7,6 +7,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 
+
 @Data
 //this annotation is for making the object creation clean
 @Builder
@@ -51,5 +52,35 @@ public class ApiResponse<T>{
                 .timestamp(LocalDateTime.now())
                 .build();
     }
+    public static <T> ApiResponse<T> success(T data) {
+        return ApiResponse.<T>builder()
+                .success(true)
+                .message("Success")
+                .data(data)
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
+
+    public static <T> ApiResponse<T> success(String message, T data, String path) {
+        return ApiResponse.<T>builder()
+                .success(true)
+                .message(message)
+                .data(data)
+                .timestamp(LocalDateTime.now())
+                .path(path)
+                .build();
+    }
+
+    public static <T> ApiResponse<T> failure(String message, String errorMsg, String path) {
+        return ApiResponse.<T>builder()
+                .success(false)
+                .message(message)
+                .error(new ApiError("ERROR", errorMsg))
+                .timestamp(LocalDateTime.now())
+                .path(path)
+                .build();
+    }
+
+
 
 }
