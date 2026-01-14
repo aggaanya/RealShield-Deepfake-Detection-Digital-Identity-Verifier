@@ -144,45 +144,34 @@ const AboutPage = () => {
             <div className="flex flex-col items-center text-center p-6">
               <div className="w-32 h-32 rounded-full overflow-hidden mb-4 bg-gray-100">
                 <img 
-                  src="https://randomuser.me/api/portraits/women/44.jpg" 
-                  alt="Ananya Pandey"
+                  src="public\patterns\aanya.jpeg" 
+                  alt="Aanya Aggarwal"
                   className="w-full h-full object-cover"
                 />
               </div>
-              <h3 className="text-xl font-bold">Ananya Pandey</h3>
+              <h3 className="text-xl font-bold">Aanya Aggarwal</h3>
             </div>
             
             <div className="flex flex-col items-center text-center p-6">
               <div className="w-32 h-32 rounded-full overflow-hidden mb-4 bg-gray-100">
                 <img 
-                  src="https://randomuser.me/api/portraits/men/42.jpg" 
-                  alt="Arnab Goswami"
+                  src="public\patterns\saumya.jpeg" 
+                  alt="Saumya Kashyap"
                   className="w-full h-full object-cover"
                 />
               </div>
-              <h3 className="text-xl font-bold">Arnab Goswami</h3>
+              <h3 className="text-xl font-bold">Saumya Kashyap</h3>
             </div>
             
             <div className="flex flex-col items-center text-center p-6">
               <div className="w-32 h-32 rounded-full overflow-hidden mb-4 bg-gray-100">
                 <img 
-                  src="https://randomuser.me/api/portraits/men/32.jpg" 
-                  alt="Manab Kaul"
+                  src="public\patterns\manya.jpeg" 
+                  alt="Manya Dawar"
                   className="w-full h-full object-cover"
                 />
               </div>
-              <h3 className="text-xl font-bold">Manab Kaul</h3>
-            </div>
-            
-            <div className="flex flex-col items-center text-center p-6">
-              <div className="w-32 h-32 rounded-full overflow-hidden mb-4 bg-gray-100">
-                <img 
-                  src="https://randomuser.me/api/portraits/women/33.jpg" 
-                  alt="Saumya Tandon"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <h3 className="text-xl font-bold">Saumya Tandon</h3>
+              <h3 className="text-xl font-bold">Manya Dawar</h3>
             </div>
           </div>
         </div>
