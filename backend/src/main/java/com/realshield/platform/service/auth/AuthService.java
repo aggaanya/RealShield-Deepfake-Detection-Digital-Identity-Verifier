@@ -210,5 +210,4 @@ public class AuthService {
         //returning the response into the response DTO
         return AuthResponseDTO.builder().email(user.getEmail()).message("Signup successful. Please verify your email.").build();
     }
-
 }
